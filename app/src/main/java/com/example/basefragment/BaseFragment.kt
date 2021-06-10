@@ -1,33 +1,43 @@
 package com.example.basefragment
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty0
 import kotlin.reflect.full.*
+import kotlin.reflect.typeOf
 
-abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
+abstract class BaseFragment<VB : ViewBinding>(
+    private val typeVB: KClass<out VB>
+) : Fragment() {
 
-    inline fun <reified T : Any> type() = T::class.functions
+    lateinit var binding: VB
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        printVlad("type - ${typeVB}")
+        printVlad("binding - ${typess()}")
+    }
+
+    private fun getViewBinding() = typeVB.functions
         .filter {
             it.name == "inflate" && it.parameters.size == 1
         }.map {
             it.call(layoutInflater)
-        }.first() as T
+        }.first() as VB
+
+    private fun typess() = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
 
 }
 
-//    protected lateinit var binding: VB private set
-//    protected abstract val initBinding: () -> VB
-//
-//    protected lateinit var viewModel: VM private set
-//    protected abstract val initViewModel: () -> VM
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
+
 ////        with(javaClass.genericSuperclass as ParameterizedType) {
 ////            val s = actualTypeArguments[1]::class as KClass<VM>
 ////        }
@@ -35,7 +45,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 //        javaClass.genericSuperclass?.also { type ->
 //            viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
 //                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-//                    // TODO: 08.06.21
+//
 //                    return T
 //                }
 //            }).get((type as ParameterizedType).actualTypeArguments[1]::class.java as Class<VM>)
