@@ -18,7 +18,7 @@ class SomeFragment : BaseFragment<FragmentSomeBinding>() {
     ): View {
         bindings = FragmentSomeBinding.inflate(inflater)
 
-        return bindings.root
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 }
 

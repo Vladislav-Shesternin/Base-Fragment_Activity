@@ -2,6 +2,7 @@ package com.example.basefragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -9,41 +10,30 @@ import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
-    lateinit var binding: VB
+    lateinit var binding: VB private set
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val type = (javaClass.genericSuperclass as ParameterizedType)
+    private val classVB = type.actualTypeArguments[0] as Class<VB>
 
-        val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
+    private val inflateMethod = classVB.getMethod(
+        "inflate",
+        LayoutInflater::class.java,
+        ViewGroup::class.java,
+        Boolean::class.java
+    )
 
-        val clazz = type as Class<VB>
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
-        printVlad("$clazz")
+        binding = inflateMethod.invoke(null, inflater, container, false) as VB
 
-
-        clazz.methods.forEach {
-            printVlad(
-                """
-                ${it.name}
-            """.trimIndent()
-            )
-        }
-
-        val s = clazz.getMethod(
-            "inflate",
-            LayoutInflater::class.java,
-            ViewGroup::class.java,
-            Boolean::class.java
-        )
-//
-        printVlad("method: $s")
-//
-//        val f = s.invoke(null, )
+        return binding.root
     }
 
 }
-
-fun getViewBinding() {}
 
 
 ////        with(javaClass.genericSuperclass as ParameterizedType) {
