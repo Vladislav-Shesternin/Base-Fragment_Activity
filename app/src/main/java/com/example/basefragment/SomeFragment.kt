@@ -9,14 +9,11 @@ import com.example.basefragment.databinding.FragmentSomeBinding
 
 class SomeFragment : BaseFragment<FragmentSomeBinding>() {
 
-    private lateinit var bindings: FragmentSomeBinding
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        bindings = FragmentSomeBinding.inflate(inflater)
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }

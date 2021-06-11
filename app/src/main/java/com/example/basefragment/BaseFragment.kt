@@ -10,7 +10,7 @@ import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
-    lateinit var binding: VB private set
+    protected lateinit var binding: VB private set
 
     private val type = (javaClass.genericSuperclass as ParameterizedType)
     private val classVB = type.actualTypeArguments[0] as Class<VB>
